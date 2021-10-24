@@ -4,7 +4,6 @@ import com.example.springrestcontrollereclient.data.ManipularArquivos;
 import com.example.springrestcontrollereclient.movie.MovieRepository;
 import com.example.springrestcontrollereclient.movie.ResultadoBusca;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +32,7 @@ public class MovieRestController {
         return buscaResult;
     }
 
-    @GetMapping("/movies/ID")
+    @GetMapping("/movies/{id}")
     public ResultadoBusca detalhes(@RequestParam String imdbId) {
         return this.repository.detalhes(imdbId);
     }

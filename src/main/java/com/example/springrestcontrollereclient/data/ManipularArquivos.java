@@ -29,7 +29,6 @@ public class ManipularArquivos {
         String filePath = getFilePath("cache.csv");
 
         try(Stream<String> linhas = Files.lines(Path.of(filePath))) {
-
             this.movies = criarMovie(linhas.collect(Collectors.toList()));
         }
         catch (IOException e) {
@@ -42,7 +41,7 @@ public class ManipularArquivos {
 
         linhas.remove(0);
         for (String linha : linhas) {
-            String[] split = linha.split(",");
+            String[] split = linha.split(";");
 
             Movie movie = new Movie();
             movie.setImdbId(split[0]);
@@ -69,7 +68,6 @@ public class ManipularArquivos {
     public ResultadoBusca buscar(String movieTitle) {
         ResultadoBusca resultadoBusca = new ResultadoBusca();
         List<Movie> movieList = this.movies.stream()
-                .skip(1)
                 .filter(m -> m.getTitle().contains(movieTitle))
                 .collect(Collectors.toList());
 
@@ -85,13 +83,13 @@ public class ManipularArquivos {
     public void addMovies(ResultadoBusca buscaResult) {
         for (Movie movie : buscaResult.getResultList()) {
             Optional<Movie> movieFilter = this.movies.stream()
-                    .filter(m -> m.getImdbId() == movie.getImdbId())
+                    .filter(m -> m.getImdbId().equals(movie.getImdbId()))
                     .findFirst();
 
             if (!movieFilter.isPresent()) {
                 String linha =
-                        movie.getImdbId() + "," +
-                        movie.getTitle() + "," +
+                        movie.getImdbId() + ";" +
+                        movie.getTitle() + ";" +
                         movie.getYear().toString();
 
                 addLinha(linha);
@@ -103,11 +101,11 @@ public class ManipularArquivos {
         String filePath = getFilePath("cache.csv");
 
         try(FileOutputStream arquivo = new FileOutputStream(String.valueOf(Path.of(filePath)), true)) {
+            arquivo.write('\n');
             for (int i = 0; i < linha.length(); i++) {
                 int c = linha.charAt(i);
                 arquivo.write(c);
             }
-            arquivo.write('\n');
         }
         catch (IOException e) {
             e.printStackTrace();
