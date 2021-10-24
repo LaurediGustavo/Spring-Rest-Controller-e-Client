@@ -11,5 +11,5 @@ public interface MovieRepository {
     ResultadoBusca buscar(@RequestParam("s") String movieTitle);
 
     @GetMapping
-    ResultadoBusca detalhes(@RequestParam("i") String imdbId);
+    ResultadoBusca detalhes(@PathVariable("i") String id);
 }
