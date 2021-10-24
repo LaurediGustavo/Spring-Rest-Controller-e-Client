@@ -9,8 +9,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,7 +20,6 @@ import java.util.stream.Stream;
 
 public class ManipularArquivos {
     private List<Movie> movies;
-    private CSVWriter arquivo;
 
     public ManipularArquivos() {
         pesquisarArquivo();
@@ -27,31 +28,31 @@ public class ManipularArquivos {
     private void pesquisarArquivo() {
         String filePath = getFilePath("cache.csv");
 
-        try(Stream<String> linhas = Files.lines(Path.of(filePath));
-            Writer writer = Files.newBufferedWriter(Path.of(filePath))) {
+        try(Stream<String> linhas = Files.lines(Path.of(filePath))) {
 
-            criarMovie(linhas);
-            arquivo = new CSVWriter(writer);
-            arquivo.flush();
+            this.movies = criarMovie(linhas.collect(Collectors.toList()));
         }
         catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void criarMovie(Stream<String> linhas) {
-        Movie movie;
+    private List<Movie> criarMovie(List<String> linhas) {
+        List<Movie> filmes = new ArrayList<>();
 
-        for (String linha : linhas.collect(Collectors.toList())) {
-            String[] split = linha.split(",(?=\\S)");
+        linhas.remove(0);
+        for (String linha : linhas) {
+            String[] split = linha.split(",");
 
-            movie = new Movie();
+            Movie movie = new Movie();
             movie.setImdbId(split[0]);
             movie.setTitle(split[1]);
             movie.setYear(split[2]);
 
-            this.movies.add(movie);
+            filmes.add(movie);
         }
+
+        return filmes;
     }
 
     private String getFilePath(String fileName) {
@@ -88,14 +89,28 @@ public class ManipularArquivos {
                     .findFirst();
 
             if (!movieFilter.isPresent()) {
-                String[] linha = {
-                        movieFilter.get().getImdbId(),
-                        movieFilter.get().getTitle(),
-                        movieFilter.get().getYear().toString()
-                };
+                String linha =
+                        movie.getImdbId() + "," +
+                        movie.getTitle() + "," +
+                        movie.getYear().toString();
 
-                this.arquivo.writeNext(linha);
+                addLinha(linha);
             }
+        }
+    }
+
+    private void addLinha(String linha) {
+        String filePath = getFilePath("cache.csv");
+
+        try(FileOutputStream arquivo = new FileOutputStream(String.valueOf(Path.of(filePath)), true)) {
+            for (int i = 0; i < linha.length(); i++) {
+                int c = linha.charAt(i);
+                arquivo.write(c);
+            }
+            arquivo.write('\n');
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

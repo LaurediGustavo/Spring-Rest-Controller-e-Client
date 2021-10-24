@@ -25,7 +25,7 @@ public class MovieRestController {
             buscaResult = arq.buscar(movieTitle);
         }
 
-        if (buscaResult == null) {
+        if (buscaResult.getResultList() == null) {
             buscaResult = this.repository.buscar(movieTitle);
             arq.addMovies(buscaResult);
         }
