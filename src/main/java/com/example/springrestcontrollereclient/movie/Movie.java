@@ -32,4 +32,13 @@ public class Movie {
                 .findFirst()
                 .orElseThrow();
     }
+
+    public String convertToCsv() {
+        return "\n"
+                + getImdbId()
+                + ";"
+                + getTitle()
+                + ";"
+                + getYear().toString();
+    }
 }

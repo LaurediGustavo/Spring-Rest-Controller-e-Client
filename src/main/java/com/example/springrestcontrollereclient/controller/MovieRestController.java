@@ -16,17 +16,17 @@ public class MovieRestController {
         this.repository = repository;
     }
 
-    @GetMapping("/movies")
-    public ResultadoBusca buscar(@RequestParam String movieTitle) {
+    @GetMapping("/search")
+    public ResultadoBusca buscar(@RequestParam String title) {
         ResultadoBusca buscaResult = new ResultadoBusca();
         ManipularArquivos arq = new ManipularArquivos();
 
         if (arq.getSizeList() > 0) {
-            buscaResult = arq.buscar(movieTitle);
+            buscaResult = arq.buscar(title);
         }
 
         if (buscaResult.getResultList() == null) {
-            buscaResult = this.repository.buscar(movieTitle);
+            buscaResult = this.repository.buscar(title);
             arq.addMovies(buscaResult);
         }
 

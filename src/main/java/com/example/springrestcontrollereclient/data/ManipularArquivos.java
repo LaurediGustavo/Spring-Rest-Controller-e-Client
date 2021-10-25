@@ -2,14 +2,11 @@ package com.example.springrestcontrollereclient.data;
 
 import com.example.springrestcontrollereclient.movie.Movie;
 import com.example.springrestcontrollereclient.movie.ResultadoBusca;
-import com.opencsv.CSVWriter;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Writer;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -29,14 +26,14 @@ public class ManipularArquivos {
         String filePath = getFilePath("cache.csv");
 
         try(Stream<String> linhas = Files.lines(Path.of(filePath))) {
-            this.movies = criarMovie(linhas.collect(Collectors.toList()));
+            this.movies = pegarMovie(linhas.collect(Collectors.toList()));
         }
         catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private List<Movie> criarMovie(List<String> linhas) {
+    private List<Movie> pegarMovie(List<String> linhas) {
         List<Movie> filmes = new ArrayList<>();
 
         linhas.remove(0);
@@ -87,12 +84,7 @@ public class ManipularArquivos {
                     .findFirst();
 
             if (!movieFilter.isPresent()) {
-                String linha =
-                        movie.getImdbId() + ";" +
-                        movie.getTitle() + ";" +
-                        movie.getYear().toString();
-
-                addLinha(linha);
+                addLinha(movie.convertToCsv());
             }
         }
     }
@@ -101,7 +93,6 @@ public class ManipularArquivos {
         String filePath = getFilePath("cache.csv");
 
         try(FileOutputStream arquivo = new FileOutputStream(String.valueOf(Path.of(filePath)), true)) {
-            arquivo.write('\n');
             for (int i = 0; i < linha.length(); i++) {
                 int c = linha.charAt(i);
                 arquivo.write(c);
